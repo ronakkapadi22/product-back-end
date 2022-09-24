@@ -1,11 +1,11 @@
 export const arrayFormatter = (data, prop) => {
-    let obj ={...prop}
+    let obj = { ...prop }
     const cloneData = [...data]
     const formatData = cloneData?.map((value) => {
-        Object.keys({...prop}).forEach(val => {
+        Object.keys({ ...prop }).forEach(val => {
             obj[val] = value[val]
         })
-        return {...obj}
+        return { ...obj }
     })
-    return formatData
+    return [...formatData]
 }
