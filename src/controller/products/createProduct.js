@@ -4,15 +4,15 @@ import product from "../../model/product.js"
 export const createProduct = async (req, res) => {
     const {
         product_name,
-        product_image,
         product_description,
         category,
-        colours,
+        colors,
+        price,
         rating,
-        products_images,
         countryOfOrigin
     } = req.body
     const { token } = req.headers
+    const { product_image, product_images } = req.files
 
     try {
 
@@ -27,7 +27,7 @@ export const createProduct = async (req, res) => {
             message: "Invalid token, please try again later."
         })
 
-        const isAllFieldRequired = allFieldsRequired([product_name, product_description, category, colours])
+        const isAllFieldRequired = allFieldsRequired([product_name, price, product_description, category, colors])
         if (isAllFieldRequired) return res.status(400).json({
             type: "error",
             message: "All fields are required."
@@ -42,12 +42,13 @@ export const createProduct = async (req, res) => {
 
         const data = new product({
             product_name,
-            product_image,
+            product_image: product_image?.map(val => val?.location)?.toString(),
             product_description,
+            price,
             category,
-            colours,
+            colors,
             rating,
-            products_images,
+            products_images: product_images?.map(val => {return{src: val?.location, key: val?.etag}}),
             countryOfOrigin
         })
         const productData = await data.save()
