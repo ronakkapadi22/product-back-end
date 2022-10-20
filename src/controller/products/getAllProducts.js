@@ -25,17 +25,16 @@ export const getAllProducts = async (req, res) => {
         const products = await product.find({})
         return res.json({
             type: "success",
-            data: arrayFormatter(products, {
-                _id: "_id",
-                product_name: "product_name",
-                product_image: "product_image",
-                product_description: "product_description",
-                colours: "colours",
-                category: "category",
-                products_images: "products_images",
-                rating: "rating",
-                countryOfOrigin: "countryOfOrigin"
-            })
+            data: arrayFormatter(products, ['_id', 
+            'product_name', 
+            'product_image', 
+            'product_description', 
+            'price', 
+            'colors', 
+            'category', 
+            'products_images', 
+            'rating', 
+            'countryOfOrigin'])
         })
     } catch (error) {
         return res.status(500).json({

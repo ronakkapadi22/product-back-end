@@ -32,7 +32,7 @@ export const userLogin = async (req, res) => {
                 role: findUser?.role,
                 username: findUser?.username,
                 contact: findUser?.contact
-            }, 10)
+            })
         })
 
 

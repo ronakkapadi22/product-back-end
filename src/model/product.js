@@ -7,19 +7,24 @@ const productSchema = new Schema({
     },
     product_name: {
         type: String,
-        required: true,
+        required: [true, "Product name is required."],
         trim: true
     },
     product_image:{
         type: String,
-        required: false,
+        required: [true, "Product image is required."],
         default: null,
         trim: true
     },
     product_description:{
         type: String,
-        required: true,
+        required: [true, "Product description is required."],
         minlength: 100,
+        trim: true
+    },
+    price: {
+        type: Number,
+        required: [true, "Product price is required."],
         trim: true
     },
     category: {
@@ -39,9 +44,8 @@ const productSchema = new Schema({
         required: false
     },
     products_images: [{
-        type: String,
-        required: false,
-        trim: true
+        type: Object,
+        required: [true, "Product images is required."],
     }],
     countryOfOrigin: {
         type: String,

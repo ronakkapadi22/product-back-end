@@ -8,11 +8,11 @@ import { getUser } from "../controller/getUser.js";
 import { resetPassword } from "../controller/resetPassword.js";
 import { userLogin } from "../controller/userLogin.js";
 import { createUserRegistration } from "../controller/userRegistration.js";
-import { emailValidator, passwordValidator, validateUser, validateProducts } from "../middleware/validator.js";
+import { emailValidator, passwordValidator, validateUser } from "../middleware/validator.js";
 import { getAllProducts } from "../controller/products/getAllProducts.js";
+import { upload } from "../helpers/s3-bucket.js";
 
 const router = Router()
-
 // auth and user access routes
 router.post('/registration', validateUser, createUserRegistration)
 router.post('/login', userLogin)
@@ -25,7 +25,7 @@ router.get('/all-user', getAllUsers)
 
 
 // products routes
-router.post('/create-products', validateProducts, createProduct)
+router.post('/create-products', upload.fields([ { name: 'product_image', maxCount: 1 }, { name: 'product_images', maxCount: 2 } ]),  createProduct)
 router.get('/all-products', getAllProducts)
 
 export default router
