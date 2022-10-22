@@ -1,16 +1,14 @@
-import { serverError } from '../helpers/errors.js'
-import { isTokenExpired, isValidObjectId, verifyUserToken } from '../helpers/index.js'
-import user from '../model/user.js'
+import { serverError } from "../../helpers/errors.js"
+import { isTokenExpired, verifyUserToken } from "../../helpers/index.js"
+import cart from '../../model/cart.js'
+import user from "../../model/user.js"
 
-
-
-export const getUser = async (req, res) => {
-
+export const deleteProductAllocateForUser = async(req, res) => {
     const { token } = req.headers
     const { id } = req.params
 
     try {
-
+       
         if (!token) return res.status(401).json({
             type: "error",
             message: "No token provided."
@@ -22,28 +20,29 @@ export const getUser = async (req, res) => {
             message: "Invalid token, please try again later."
         })
 
-        if (!isValidObjectId(id)) return res.status(401).json({
-            type: "error",
-            message: "Please enter a valid user id."
-        })
-
+        const findCartProduct = await cart.findById(id)
         const verifiedUser = await verifyUserToken(token)
         const findUser = await user.findById(verifiedUser?.user_id)
-        if(verifiedUser?.role !== 'admin' && findUser?._id.toString() !== id) return res.status(401).json({
+        if(verifiedUser?.role !== 'admin' && findUser?._id.toString() !== findCartProduct?.user_id.toString()) return res.status(401).json({
             type: "error",
             message: "Unauthorized user."
         })
-        const getUser = await user.findById(id)
-        if (!getUser) return res.status(404).json({
+
+        // delete allocate product for user
+        const deleteAllocateProduct = await cart.findByIdAndDelete(id)
+        if(!deleteAllocateProduct) return res.status(404).json({
             type: "error",
-            message: "User not found."
+            message: "Product not found in the cart."
         })
-        const { _id, username, email, contact, role, created_At } = getUser
+
         return res.status(200).json({
             type: "success",
-            data: { id: _id?.toString(), username, email, contact, role, created_At }
+            message: "Product deleted successfully.",
+            data: deleteAllocateProduct?.toJSON()
         })
+
     } catch (error) {
         return serverError(error, res)
     }
+
 }

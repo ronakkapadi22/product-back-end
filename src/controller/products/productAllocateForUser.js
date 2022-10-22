@@ -1,16 +1,16 @@
-import { serverError } from '../helpers/errors.js'
-import { isTokenExpired, isValidObjectId, verifyUserToken } from '../helpers/index.js'
-import user from '../model/user.js'
+import { serverError } from "../../helpers/errors.js"
+import { allFieldsRequired, isTokenExpired, verifyUserToken } from "../../helpers/index.js"
+import cart from '../../model/cart.js'
+import user from "../../model/user.js"
 
 
-
-export const getUser = async (req, res) => {
-
+export const productAllocateForUser = async(req, res) => {
+    const { product_id, qty, color, category  } = req.body
     const { token } = req.headers
     const { id } = req.params
 
     try {
-
+        
         if (!token) return res.status(401).json({
             type: "error",
             message: "No token provided."
@@ -22,9 +22,10 @@ export const getUser = async (req, res) => {
             message: "Invalid token, please try again later."
         })
 
-        if (!isValidObjectId(id)) return res.status(401).json({
+        const isAllFieldRequired = allFieldsRequired([product_id, qty, color, category])
+        if (isAllFieldRequired) return res.status(400).json({
             type: "error",
-            message: "Please enter a valid user id."
+            message: "All fields are required."
         })
 
         const verifiedUser = await verifyUserToken(token)
@@ -33,16 +34,21 @@ export const getUser = async (req, res) => {
             type: "error",
             message: "Unauthorized user."
         })
-        const getUser = await user.findById(id)
-        if (!getUser) return res.status(404).json({
-            type: "error",
-            message: "User not found."
+
+        // add poduct allocate in cart for user
+
+        const data = new cart({
+            user_id: id, product_id, qty, color, category
         })
-        const { _id, username, email, contact, role, created_At } = getUser
-        return res.status(200).json({
+
+        const cartData = await data.save()
+
+        res.status(201).json({
             type: "success",
-            data: { id: _id?.toString(), username, email, contact, role, created_At }
+            message: "Product added to cart successfully.",
+            data: cartData
         })
+
     } catch (error) {
         return serverError(error, res)
     }

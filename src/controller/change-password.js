@@ -1,3 +1,4 @@
+import { serverError } from "../helpers/errors.js"
 import { allFieldsRequired, comparePassword, generateNewToken, hashPassword, verifyUserToken } from "../helpers/index.js"
 import user from "../model/user.js"
 
@@ -49,9 +50,6 @@ export const changePassword = async(req, res) => {
         })
 
     } catch (error) {
-        return res.status(500).json({
-            type: 'error',
-            message: error.message || 'Something went wrong.',
-        });
+        return serverError(error, res)
     }
 }
