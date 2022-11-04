@@ -30,7 +30,7 @@ export const createProduct = async (req, res) => {
 
         if (!isValidObjectId(id)) return res.status(401).json({
             type: "error",
-            message: "Please enter a valid user id."
+            message: "Please enter a valid id."
         })
 
         const isAllFieldRequired = allFieldsRequired([product_name, price, product_description, category, colors])
@@ -39,7 +39,12 @@ export const createProduct = async (req, res) => {
             message: "All fields are required."
         })
 
+        const isAdmin = await handleAdminAccess(token)
         
+        if(!isAdmin) return res.status(401).json({
+            type: "error",
+            message: "Unauthorized user."
+        })
 
         const data = new product({
             product_name,

@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
 
-const userSchema = new Schema({
+export const userSchema = new Schema({
     created_At: {
         type: Date,
         default: Date.now

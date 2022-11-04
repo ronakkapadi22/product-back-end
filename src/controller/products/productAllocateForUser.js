@@ -1,6 +1,7 @@
 import { serverError } from "../../helpers/errors.js"
 import { allFieldsRequired, isTokenExpired, verifyUserToken } from "../../helpers/index.js"
 import cart from '../../model/cart.js'
+import product from "../../model/product.js"
 import user from "../../model/user.js"
 
 
@@ -37,17 +38,62 @@ export const productAllocateForUser = async(req, res) => {
 
         // add poduct allocate in cart for user
 
-        const data = new cart({
-            user_id: id, product_id, qty, color, category
+        const getUserCartAllocated = await cart.findOne({user_id: id})
+        const getFindProduct = await product.findById(product_id)
+
+        if(!getFindProduct) return res.status(404).json({
+            type: "error",
+            message: "Product not found, please add another product."
         })
 
-        const cartData = await data.save()
+        const { product_name, product_image, product_description, price, countryOfOrigin } = getFindProduct
 
-        res.status(201).json({
-            type: "success",
-            message: "Product added to cart successfully.",
-            data: cartData
-        })
+        if(!getUserCartAllocated){  
+            const data = new cart({
+                user_id: id,
+                cart_data: [{
+                    product_id,
+                    product_name,
+                    product_description,
+                    product_image,
+                    qty,
+                    price,
+                    color,
+                    category,
+                    countryOfOrigin
+                }]
+            })
+
+            const cartData = await data.save()
+
+            return res.status(201).json({
+                type: "success",
+                message: "Product added to cart successfully.",
+                data: cartData
+            })
+        }
+
+       const { cart_data } =  getUserCartAllocated
+
+       cart_data.push({
+        product_id,
+        product_name,
+        product_description,
+        product_image,
+        qty,
+        price,
+        color,
+        category,
+        countryOfOrigin
+    })
+
+    const cartData = await getUserCartAllocated.save()
+
+    return res.status(201).json({
+        type: "success",
+        message: "Product added to cart successfully.",
+        data: cartData
+    })
 
     } catch (error) {
         return serverError(error, res)

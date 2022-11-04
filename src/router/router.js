@@ -16,6 +16,10 @@ import { updateProductAllocateForUser } from "../controller/products/updateProdu
 import { deleteProductAllocateForUser } from "../controller/products/deleteProductAllocateForUser.js";
 import { deleteProduct } from "../controller/products/deleteProduct.js";
 import { getProductAllocateForUser } from "../controller/products/getProductAllocateForUser.js";
+import { createShippingAddress } from "../controller/shipping/createShippingAddress.js";
+import { getAllShippingAddressForUser } from "../controller/shipping/getAllShippingAddressForUser.js";
+import { addProductInWishlists } from "../controller/wishlists/addProductInWishlists.js";
+import { deleteProductInWishlists } from "../controller/wishlists/deleteProductInWishlists.js";
 
 const router = Router()
 
@@ -39,5 +43,14 @@ router.get('/add-to-cart/cart/:id', getProductAllocateForUser)
 router.post('/add-to-cart/:id', productAllocateForUser)
 router.put('/add-to-cart/update/:id', updateProductAllocateForUser)
 router.delete('/add-to-cart/delete/:id', deleteProductAllocateForUser)
+
+
+//shipping address routes
+router.post('/shipping-address/:id', createShippingAddress)
+router.get('/shipping-address/address/:id', getAllShippingAddressForUser)
+
+//wishlists
+router.post('/user-wishlists/:id', addProductInWishlists)
+router.delete('/user-wishlists/delete/:id', deleteProductInWishlists)
 
 export default router

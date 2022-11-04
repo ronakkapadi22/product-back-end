@@ -24,7 +24,7 @@ export const getUser = async (req, res) => {
 
         if (!isValidObjectId(id)) return res.status(401).json({
             type: "error",
-            message: "Please enter a valid user id."
+            message: "Please enter a valid id."
         })
 
         const verifiedUser = await verifyUserToken(token)

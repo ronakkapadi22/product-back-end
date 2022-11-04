@@ -1,14 +1,13 @@
-import { handleAdminAccess, isTokenExpired, verifyUserToken } from "../../helpers/index.js"
 import { serverError } from "../../helpers/errors.js"
+import { handleAdminAccess, isTokenExpired, isValidObjectId, verifyUserToken } from "../../helpers/index.js"
+import shippingAddress from "../../model/shipping.js"
 import user from "../../model/user.js"
-import cart from "../../model/cart.js"
 
-export const getProductAllocateForUser = async (req, res) => {
-
-    const { id } = req.params
-    const { token } = req.headers
-
+export const getAllShippingAddressForUser = async(req, res) => {
     try {
+
+        const { token } = req.headers
+        const { id } = req.params
 
         if (!token) return res.status(401).json({
             type: "error",
@@ -21,23 +20,26 @@ export const getProductAllocateForUser = async (req, res) => {
             message: "Invalid token, please try again later."
         })
 
+        if (!isValidObjectId(id)) return res.status(401).json({
+            type: "error",
+            message: "Please enter a valid id."
+        })
+
         const verifiedUser = await verifyUserToken(token)
         const findUser = await user.findById(verifiedUser?.user_id)
-        if (verifiedUser?.role !== 'admin' && findUser?._id.toString() !== id) return res.status(401).json({
+        if(verifiedUser?.role !== 'admin' && findUser?._id.toString() !== id) return res.status(401).json({
             type: "error",
             message: "Unauthorized user."
         })
-
-
-
-        const cartData = await handleAdminAccess(token) ? await cart.find({}) : await cart.findOne({user_id: id})
         
+        const allShippingAddresses = await shippingAddress.find(await handleAdminAccess(token) ? {} : {user_id: id})
+
         return res.status(200).json({
             type: "success",
-            data: await handleAdminAccess(token) ? cartData : cartData?.cart_data
+            data: allShippingAddresses
         })
 
     } catch (error) {
-    return serverError(error, res)
-}
+        return serverError(error, res)
+    }
 }
