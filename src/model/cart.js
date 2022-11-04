@@ -1,9 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 
-export const productSchema = new Schema({
-    created_At: {
-        type: Date,
-        default: Date.now
+export const cartProductSchema = new Schema({
+    product_id: {
+        type: String,
+        required: [true, 'Product id is required.']
     },
     product_name: {
         type: String,
@@ -22,6 +22,11 @@ export const productSchema = new Schema({
         minlength: 100,
         trim: true
     },
+    qty: {
+        type: Number,
+        required: [true, 'Product qty is required.'],
+        default: 1
+    },
     price: {
         type: Number,
         required: [true, "Product price is required."],
@@ -29,24 +34,12 @@ export const productSchema = new Schema({
     },
     category: {
         type: String,
-        required: true,
-        trim: true
+        required: [true, 'Product category is required.']
     },
-    colors: [
-        {
-            type: String,
-            required: true,
-        }
-    ],
-    rating: {
-        type: Number,
-        default: null,
-        required: false
+    color: {
+        type: String,
+        required: [true, 'Product colour is required.']
     },
-    products_images: [{
-        type: Object,
-        required: true,
-    }],
     countryOfOrigin: {
         type: String,
         required: false,
@@ -55,5 +48,17 @@ export const productSchema = new Schema({
     }
 })
 
-const product = mongoose.model('Products', productSchema)
-export default product
+export const cartSchema = new Schema({
+    created_At: {
+        type: Date,
+        default: Date.now
+    },
+    user_id: {
+        type: String,
+        required: [true, 'User id is required.']
+    },
+    cart_data: [cartProductSchema],
+})
+
+const cart = mongoose.model('Cart', cartSchema)
+export default cart

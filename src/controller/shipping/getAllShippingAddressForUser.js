@@ -1,15 +1,13 @@
-import { serverError } from '../helpers/errors.js'
-import { isTokenExpired, isValidObjectId, verifyUserToken } from '../helpers/index.js'
-import user from '../model/user.js'
+import { serverError } from "../../helpers/errors.js"
+import { handleAdminAccess, isTokenExpired, isValidObjectId, verifyUserToken } from "../../helpers/index.js"
+import shippingAddress from "../../model/shipping.js"
+import user from "../../model/user.js"
 
-
-
-export const getUser = async (req, res) => {
-
-    const { token } = req.headers
-    const { id } = req.params
-
+export const getAllShippingAddressForUser = async(req, res) => {
     try {
+
+        const { token } = req.headers
+        const { id } = req.params
 
         if (!token) return res.status(401).json({
             type: "error",
@@ -33,16 +31,14 @@ export const getUser = async (req, res) => {
             type: "error",
             message: "Unauthorized user."
         })
-        const getUser = await user.findById(id)
-        if (!getUser) return res.status(404).json({
-            type: "error",
-            message: "User not found."
-        })
-        const { _id, username, email, contact, role, created_At } = getUser
+        
+        const allShippingAddresses = await shippingAddress.find(await handleAdminAccess(token) ? {} : {user_id: id})
+
         return res.status(200).json({
             type: "success",
-            data: { id: _id?.toString(), username, email, contact, role, created_At }
+            data: allShippingAddresses
         })
+
     } catch (error) {
         return serverError(error, res)
     }

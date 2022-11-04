@@ -27,6 +27,7 @@ export const allFieldsRequired = (data) => {
     return validatorArray?.some(data => !!data)
 }
 
+
 export const hashPassword = async (value) => {
     const saltRounds = 10;
     const hashedPassword = await new Promise((resolve, reject) => {

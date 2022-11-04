@@ -1,3 +1,4 @@
+import { serverError } from "../helpers/errors.js"
 import { generateNewToken } from "../helpers/index.js"
 import sendEmailService from "../helpers/mailService.js"
 import user from "../model/user.js"
@@ -37,9 +38,6 @@ export const forgotPassword = async (req, res) => {
         }
 
     } catch (error) {
-        return res.status(500).json({
-            type: 'error',
-            message: error.message || 'Something went wrong.',
-        });
+        return serverError(error, res)
     }
 }

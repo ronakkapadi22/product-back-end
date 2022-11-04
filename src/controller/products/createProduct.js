@@ -1,3 +1,4 @@
+import { serverError } from "../../helpers/errors.js"
 import { allFieldsRequired, handleAdminAccess, isTokenExpired } from "../../helpers/index.js"
 import product from "../../model/product.js"
 
@@ -27,6 +28,11 @@ export const createProduct = async (req, res) => {
             message: "Invalid token, please try again later."
         })
 
+        if (!isValidObjectId(id)) return res.status(401).json({
+            type: "error",
+            message: "Please enter a valid id."
+        })
+
         const isAllFieldRequired = allFieldsRequired([product_name, price, product_description, category, colors])
         if (isAllFieldRequired) return res.status(400).json({
             type: "error",
@@ -34,7 +40,7 @@ export const createProduct = async (req, res) => {
         })
 
         const isAdmin = await handleAdminAccess(token)
-
+        
         if(!isAdmin) return res.status(401).json({
             type: "error",
             message: "Unauthorized user."
@@ -48,11 +54,11 @@ export const createProduct = async (req, res) => {
             category,
             colors,
             rating,
-            products_images: product_images?.map(val => {return{src: val?.location, key: val?.etag}}),
+            products_images: product_images?.map(val => { return { src: val?.location, key: val?.etag } }),
             countryOfOrigin
         })
         const productData = await data.save()
-        
+
         res.status(201).json({
             type: "success",
             message: "Product added successfully.",
@@ -60,9 +66,6 @@ export const createProduct = async (req, res) => {
         })
 
     } catch (error) {
-        return res.status(500).json({
-            type: 'error',
-            message: error.message || 'Something went wrong.',
-        });
+        return serverError(error, res)
     }
 }
