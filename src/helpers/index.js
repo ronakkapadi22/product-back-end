@@ -18,7 +18,8 @@ export const readHTMLFile = function (path, callback) {
     });
 };
 
-export const allFieldsRequired = (data) => {
+export const allFieldsRequired = (data, isNested = false) => {
+    if(isNested) return !data
     const cloneData = [...data]
     let validatorArray = []
     cloneData?.forEach(value => {

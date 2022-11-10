@@ -43,7 +43,7 @@ export const addProductInWishlists = async (req, res) => {
 
         if (!isValidObjectId(product_id)) return res.status(401).json({
             type: "error",
-            message: "Invalid id."
+            message: "Please enter a valid product id."
         })
 
         const getFindProduct = await product.findById(product_id)
@@ -70,17 +70,17 @@ export const addProductInWishlists = async (req, res) => {
             })
         }
 
-        const { wish_lists } =  getUserCartAllocated
+        const { wish_lists } = getUserCartAllocated
         const cloneData = await wish_lists.map(data => data.product_id)
 
-        if(cloneData.includes(_id.toString())) return res.status(400).json({
+        if (cloneData.includes(_id.toString())) return res.status(400).json({
             type: "error",
             message: "Product already added in wishlist."
         })
 
         wish_lists.push({ product_id: _id.toString() })
         await getUserCartAllocated.save()
-    
+
         return res.status(201).json({
             type: "success",
             message: "Product added to wishlist successfully.",

@@ -15,6 +15,9 @@ export const createProduct = async (req, res) => {
     const { token } = req.headers
     const { product_image, product_images } = req.files
 
+
+    console.log('product_image :', product_image)
+
     try {
 
         if (!token) return res.status(401).json({
@@ -28,11 +31,6 @@ export const createProduct = async (req, res) => {
             message: "Invalid token, please try again later."
         })
 
-        if (!isValidObjectId(id)) return res.status(401).json({
-            type: "error",
-            message: "Please enter a valid id."
-        })
-
         const isAllFieldRequired = allFieldsRequired([product_name, price, product_description, category, colors])
         if (isAllFieldRequired) return res.status(400).json({
             type: "error",
@@ -40,21 +38,21 @@ export const createProduct = async (req, res) => {
         })
 
         const isAdmin = await handleAdminAccess(token)
-        
-        if(!isAdmin) return res.status(401).json({
+
+        if (!isAdmin) return res.status(401).json({
             type: "error",
             message: "Unauthorized user."
         })
 
         const data = new product({
             product_name,
-            product_image: product_image?.map(val => val?.location)?.toString(),
+            product_image: product_image?.map(val => val?.location)?.toString().replace(`.${process.env.BUCKET_NAME}`, ''),
             product_description,
             price,
             category,
             colors,
             rating,
-            products_images: product_images?.map(val => { return { src: val?.location, key: val?.etag } }),
+            products_images: product_images?.map(val => { return { src: val?.location?.replace(`.${process.env.BUCKET_NAME}`, ''), key: val?.etag } }),
             countryOfOrigin
         })
         const productData = await data.save()
