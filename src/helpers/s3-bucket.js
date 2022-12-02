@@ -17,7 +17,7 @@ const BUCKET_NAME = process.env.BUCKET_NAME
 export const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: BUCKET_NAME,
+    bucket: BUCKET_NAME || "nova-ecom",
     acl: 'public-read',
     contentType: multerS3.AUTO_CONTENT_TYPE,
     metadata: function (req, file, cb) {
