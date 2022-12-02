@@ -1,4 +1,5 @@
-import Stripe from 'stripe'
+// import Stripe from 'stripe'
+import Razorpay from 'razorpay'
 import * as dotenv from 'dotenv'
 dotenv.config()
 import { serverError } from "../../helpers/errors.js"
@@ -6,7 +7,12 @@ import { allFieldsRequired, isTokenExpired, verifyUserToken } from '../../helper
 import cart from '../../model/cart.js'
 import user from '../../model/user.js'
 
-const stripe = new Stripe(process.env.STRIPE_MARUTI_SK)
+// const stripe = new Stripe(process.env.STRIPE_MARUTI_SK)
+
+const instance = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_SK
+});
 
 export const createCheckoutSessionForUser = async (req, res, next) => {
 
@@ -58,44 +64,56 @@ export const createCheckoutSessionForUser = async (req, res, next) => {
 
         const isAllProductExist = newData.every(value => value === true)
 
-        console.log('isAllProductExist', isAllProductExist)
-
         if (!isAllProductExist) return res.status(200).json({
             type: "error",
             message: 'Invalid cart items.'
         })
 
-        const line_items = cart_data.map((value) => {
-            return {
-                price_data: {
-                    currency: "inr",
-                    product_data: {
-                        name: value.product_name,
-                        description: value.product_description,
-                        images: [value.product_image]
-                    },
-                    unit_amount: (value.price * 100)
-                },
-                quantity: value.qty
+        // const line_items = cart_data.map((value) => {
+        //     return {
+        //         price_data: {
+        //             currency: "inr",
+        //             product_data: {
+        //                 name: value.product_name,
+        //                 description: value.product_description,
+        //                 images: [value.product_image]
+        //             },
+        //             unit_amount: (value.price * 100)
+        //         },
+        //         quantity: value.qty
+        //     }
+        // })
+
+        // console.log('line_items', line_items)
+
+        const total_amount = cart_data?.reduce((data, iccumlator) => (data.qty * data.price) + (iccumlator.qty * iccumlator.price))
+
+        // const session = await stripe.checkout.sessions.create({
+        //     line_items,
+        //     mode: 'payment',
+        //     payment_method_types: ['card'],
+        //     success_url: `${process.env.HOST_URL}?success=true`,
+        //     cancel_url: `${process.env.HOST_URL}?canceled=true`,
+        // })
+
+        const createPaymentIntent = await instance.orders.create({
+            amount: total_amount * 100,
+            currency: "INR",
+            receipt: "receipt#1",
+            payment_capture: true,
+            notes: {
+                orderType: "Pre"
             }
-        })
-
-        console.log('line_items', line_items)
-
-
-
-        const session = await stripe.checkout.sessions.create({
-            line_items,
-            mode: 'payment',
-            payment_method_types: ['card'],
-            success_url: `${process.env.HOST_URL}?success=true`,
-            cancel_url: `${process.env.HOST_URL}?canceled=true`,
-        })
-
-        return res.status(201).json({
-            type: "success",
-            data: session.url
-        })
+        }, async(err, order) => {
+            if(err) return res.status(401).json({
+                type: "error",
+                message: err?.message || err
+            })
+            return res.status(201).json({
+                type: "success",
+                data: order
+            })
+        }) 
 
     } catch (error) {
         return serverError(error, res)

@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import { Router } from "express";
 import { changePassword } from "../controller/change-password.js";
 import { createProduct } from "../controller/products/createProduct.js";
 import { deleteUser } from "../controller/deleteUser.js";
@@ -24,6 +24,9 @@ import { getProductInWishlists } from "../controller/wishlists/getProductInWishl
 import { addProductComments } from "../controller/product review/addProductComments.js";
 import { createCheckoutSessionForUser } from "../controller/checkout/createCheckoutSessionForUser.js";
 import { stripeWebHooks } from "../controller/webhooks/webhooks.js";
+import { getProductComments } from "../controller/product review/getProductComments.js";
+import { createCheckoutPaymentSession } from "../controller/checkout/createCheckoutPaymentSession.js";
+import { updateShippingAddress } from "../controller/shipping/updateShippingAddress.js";
 
 const router = Router()
 
@@ -52,6 +55,7 @@ router.delete('/add-to-cart/delete/:id', deleteProductAllocateForUser)
 //shipping address routes
 router.post('/shipping-address/:id', createShippingAddress)
 router.get('/shipping-address/address/:id', getAllShippingAddressForUser)
+router.patch('/shipping-address/update/:id', updateShippingAddress)
 
 //wishlists
 router.post('/user-wishlists/:id', addProductInWishlists)
@@ -60,11 +64,13 @@ router.get('/user-wishlists/get/:id', getProductInWishlists)
 
 // product comments
 router.post('/product-comments/:id', addProductComments)
+router.get('/product-comments/:id', getProductComments)
 
-//payment gateways
+//razorpay gateways
 router.post('/create-checkout-session/:id', createCheckoutSessionForUser)
+router.post('/create-payment-session/capture/:id', createCheckoutPaymentSession)
 
-// stripe webhooks
-router.post('/stripe/webhooks', express.raw({ type: 'application/json' }), stripeWebHooks)
+// razorpay webhooks
+// router.post('/stripe/webhooks', express.raw({ type: 'application/json' }), stripeWebHooks)
 
 export default router

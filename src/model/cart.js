@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-export const cartProductSchema = new Schema({
+export const cartProductSchema = {
     product_id: {
         type: String,
         required: [true, 'Product id is required.']
@@ -46,7 +46,7 @@ export const cartProductSchema = new Schema({
         default: "India",
         trim: true
     }
-})
+}
 
 export const cartSchema = new Schema({
     created_At: {

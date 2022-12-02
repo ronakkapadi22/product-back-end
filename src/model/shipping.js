@@ -1,12 +1,12 @@
 import mongoose, { Schema } from "mongoose";
 
 
-export const shipping_address = new Schema({
+export const shipping_address = {
     address_line_1: {
         type: String,
         required: [true, 'Address is required.'],
         trim: true,
-        maxLength: 50
+        maxLength: 150
     },
     address_line_2: {
         type: String,
@@ -31,7 +31,7 @@ export const shipping_address = new Schema({
         maxLength: 8,
         required: [true, 'Postal code is required.']
     }
-})
+}
 
 export const addressSchema = new Schema({
     create_At: {
@@ -58,9 +58,7 @@ export const addressSchema = new Schema({
         required: [true, 'Country name is required.'],
         trim: true
     },
-    shipping_address: {
-        shipping_address
-    },
+    shipping_address,
     area: {
         type: String,
         required: false
@@ -76,6 +74,11 @@ export const addressSchema = new Schema({
         required: true,
         default: "Home",
         trim: true
+    },
+    isDefaultShipping: {
+        type: Boolean,
+        required: false,
+        default: false
     }
 })
 

@@ -9,8 +9,6 @@ export const addProductComments = async (req, res, next) => {
         const { token } = req.headers
         const { id } = req.params
         const { product_id, review } = req.body
-        const { product_images } = req.files
-        const { comment, rating } = review
 
         if (!token) return res.status(401).json({
             type: "error",
@@ -28,7 +26,7 @@ export const addProductComments = async (req, res, next) => {
             message: "Please enter a valid id."
         })
 
-        const isAllFieldRequired = allFieldsRequired([product_id, rating])
+        const isAllFieldRequired = allFieldsRequired([product_id, review?.rating])
         if (isAllFieldRequired) return res.status(400).json({
             type: "error",
             message: "All fields are required."
@@ -45,13 +43,17 @@ export const addProductComments = async (req, res, next) => {
             user_id: id,
             product_id,
             review: {
-                rating,
-                comment,
-                product_images: product_images?.map(val => { return { image_url: val?.location } }),
+                rating : review?.rating,
+                comment : req.body?.comment ? req.body?.comment : null,
+                product_images: req.files?.product_images ?  req.files?.product_images?.map(val => { return { image_url: val?.location } }) : null
             }
         })
 
         const reviewData = await data.save()
+        return res.status(201).json({
+            type: "success",
+            data: reviewData
+        })
 
     } catch (error) {
         return serverError(error, res)

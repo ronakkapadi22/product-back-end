@@ -66,7 +66,11 @@ export const createShippingAddress = async(req, res) => {
             type_of_address
         })
 
+        console.log('data', data)
+
         const addressData = await data.save()
+
+        console.log('addressData', addressData)
 
         return res.status(201).json({
             type: "success",

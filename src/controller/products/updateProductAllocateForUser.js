@@ -1,7 +1,6 @@
 import { serverError } from "../../helpers/errors.js"
 import { allFieldsRequired, isTokenExpired, verifyUserToken } from "../../helpers/index.js"
 import cart from '../../model/cart.js'
-import product from "../../model/product.js"
 import user from "../../model/user.js"
 
 export const updateProductAllocateForUser = async(req, res) => {
@@ -57,7 +56,7 @@ export const updateProductAllocateForUser = async(req, res) => {
                 message: "Product updated to cart successfully.",
                 data: cartData
             })
-        }
+        }else return res.status(404).json({ type: "error", message: "product not found in this cart." })
 
     } catch (error) {
         return serverError(error, res)
