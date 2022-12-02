@@ -15,9 +15,6 @@ export const createProduct = async (req, res) => {
     const { token } = req.headers
     const { product_image, product_images } = req.files
 
-
-    console.log('product_image :', product_image)
-
     try {
 
         if (!token) return res.status(401).json({
