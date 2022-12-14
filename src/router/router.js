@@ -27,6 +27,7 @@ import { stripeWebHooks } from "../controller/webhooks/webhooks.js";
 import { getProductComments } from "../controller/product review/getProductComments.js";
 import { createCheckoutPaymentSession } from "../controller/checkout/createCheckoutPaymentSession.js";
 import { updateShippingAddress } from "../controller/shipping/updateShippingAddress.js";
+import { getProductById } from "../controller/products/getProductById.js";
 
 const router = Router()
 
@@ -45,6 +46,7 @@ router.delete('/get-users/delete/:id', deleteUser)
 // products routes
 router.post('/create-product', upload.fields([{ name: 'product_image', maxCount: 1 }, { name: 'product_images', maxCount: 5 }]), createProduct)
 router.get('/all-products', getAllProducts)
+router.get('/all-products/get/:id', getProductById)
 router.delete('/all-products/delete/:id', deleteProduct)
 router.get('/add-to-cart/cart/:id', getProductAllocateForUser)
 router.post('/add-to-cart/:id', productAllocateForUser)
