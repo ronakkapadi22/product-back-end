@@ -13,7 +13,7 @@ export const createProduct = async (req, res) => {
         countryOfOrigin
     } = req.body
     const { token } = req.headers
-    const { product_image, product_images } = req.files
+    const { product_images } = req.files
 
     try {
 
@@ -43,7 +43,7 @@ export const createProduct = async (req, res) => {
 
         const data = new product({
             product_name,
-            product_image: product_image?.map(val => val?.location)?.toString().replace(`.${process.env.BUCKET_NAME}`, ''),
+            product_image: product_images?.[0]?.location?.replace(`.${process.env.BUCKET_NAME}`, ''),
             product_description,
             price,
             category,

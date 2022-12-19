@@ -44,7 +44,7 @@ router.delete('/get-users/delete/:id', deleteUser)
 
 
 // products routes
-router.post('/create-product', upload.fields([{ name: 'product_image', maxCount: 1 }, { name: 'product_images', maxCount: 5 }]), createProduct)
+router.post('/create-product', upload.fields([{ name: 'product_images', maxCount: 6 }]), createProduct)
 router.get('/all-products', getAllProducts)
 router.get('/all-products/get/:id', getProductById)
 router.delete('/all-products/delete/:id', deleteProduct)
