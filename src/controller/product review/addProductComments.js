@@ -1,5 +1,6 @@
 import { serverError } from "../../helpers/errors.js"
 import { allFieldsRequired, isTokenExpired, isValidObjectId, verifyUserToken } from "../../helpers/index.js"
+import product from "../../model/product.js"
 import productReview from "../../model/product_review.js"
 import user from "../../model/user.js"
 
@@ -30,7 +31,7 @@ export const addProductComments = async (req, res, next) => {
         if (isAllFieldRequired) return res.status(400).json({
             type: "error",
             message: "All fields are required."
-        })
+        }) 
 
         const verifiedUser = await verifyUserToken(token)
         const findUser = await user.findById(verifiedUser?.user_id)
@@ -50,6 +51,14 @@ export const addProductComments = async (req, res, next) => {
         })
 
         const reviewData = await data.save()
+        const reviews = await productReview.find({product_id})
+
+        if(reviewData){
+            const product_rates = reviews?.map(val => val?.review?.rating)
+            const rate = product_rates?.reduce((data, value) => data + value, 0) / product_rates?.length
+            await product.findByIdAndUpdate(product_id, {rating: rate?.toFixed(1)})
+        }
+
         return res.status(201).json({
             type: "success",
             data: reviewData
