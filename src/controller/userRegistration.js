@@ -41,6 +41,6 @@ export const createUserRegistration = async (req, res) => {
         })
 
     } catch (error) {
-        return serverError(error, res)
+        serverError(error, res)
     }
 }

@@ -34,7 +34,7 @@ export const getProductAllocateForUser = async (req, res) => {
         
         return res.status(200).json({
             type: "success",
-            data: await handleAdminAccess(token) ? cartData : cartData?.cart_data
+            data: cartData || []
         })
 
     } catch (error) {

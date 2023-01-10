@@ -48,6 +48,8 @@ router.post('/create-product', upload.fields([{ name: 'product_images', maxCount
 router.get('/all-products', getAllProducts)
 router.get('/all-products/get/:id', getProductById)
 router.delete('/all-products/delete/:id', deleteProduct)
+
+//add to carts routes
 router.get('/add-to-cart/cart/:id', getProductAllocateForUser)
 router.post('/add-to-cart/:id', productAllocateForUser)
 router.put('/add-to-cart/update/:id', updateProductAllocateForUser)
