@@ -1,4 +1,4 @@
 export const config = {
-    CONNECTION_URL: "mongodb+srv://itpath:i5S32xfUa7JU-zr@cluster0.womfjvx.mongodb.net/?retryWrites=true&w=majority",
+    CONNECTION_URL: "mongodb+srv://ronak:rjxXNY1CRP8mVu4N@atlascluster.kiu61kp.mongodb.net/?retryWrites=true&w=majority&appName=AtlasCluster",
     PORT : 4000
 }
